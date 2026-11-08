@@ -281,6 +281,7 @@ export class Wallet {
     const r = this.db.prepare("SELECT * FROM approvals WHERE id = ?").get(id) as Record<string, unknown> | undefined;
     if (!r) return undefined;
     const offer = JSON.parse(String(r.offer));
+    const cap = r.ledger_id ? (this.db.prepare("SELECT capture_id FROM ledger WHERE id = ?").get(String(r.ledger_id)) as { capture_id: string | null } | undefined) : undefined;
     return {
       id: String(r.id),
       at: Number(r.at),
@@ -297,6 +298,7 @@ export class Wallet {
       orderId: (r.order_id as string | null) ?? undefined,
       proof: (r.proof as string | null) ?? undefined,
       ledgerId: (r.ledger_id as string | null) ?? undefined,
+      captureId: cap?.capture_id ?? undefined,
     };
   }
 
